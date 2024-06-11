@@ -1,0 +1,8 @@
+# conf/config.yaml
+defaults:
+  - _self_
+
+random_state: 42
+
+model:
+  n_estimators: 100
