@@ -1,0 +1,1 @@
+In this step we're adding a HP: "model_type" which defines which function to run (trained_model__rf or trained_model__gb) using config.when(...)
