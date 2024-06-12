@@ -33,7 +33,7 @@ def train_test_split_data(features: pd.DataFrame, target: pd.Series) -> dict:
     return {"X_train": X_train, "X_test": X_test, "y_train": y_train, "y_test": y_test}
 
 
-# Training an XGBoost model
+# Training an RF model
 def trained_model(
     X_train: pd.DataFrame,
     y_train: pd.Series,
