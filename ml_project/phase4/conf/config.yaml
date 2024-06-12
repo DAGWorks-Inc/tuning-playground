@@ -1,0 +1,11 @@
+# conf/config.yaml
+defaults:
+  - _self_
+
+mode: training
+random_state: 42
+
+model:
+  n_estimators: 100
+  model_type : v1
+  model_path: data/06_models/trained_model.pkl
