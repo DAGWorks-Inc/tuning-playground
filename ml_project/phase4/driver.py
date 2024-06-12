@@ -1,8 +1,12 @@
 from hamilton.driver import Builder, Driver
 from hamilton.io.materialization import to, from_
-import full_dag
+import data_prep
+import split
 import training__v1
-import training__v2 #TODO: automatically add all modules?
+import training__v2 #TODO: automatically import all modules?
+import predictions
+import evaluation
+
 import logging
 from omegaconf import DictConfig, OmegaConf
 import hydra
@@ -15,6 +19,13 @@ logger = logging.getLogger(__name__)
 def main(cfg: DictConfig) -> None:
     # Log the working and output directories
     logger.info("Starting application with configuration:\n%s", OmegaConf.to_yaml(cfg))
+
+    modules = [data_prep, split, predictions, evaluation]
+    
+    if cfg.model.model_type == "v1":
+        modules += [training__v1]
+    else:
+        modules += [training__v2]
 
     cfg_dct = {"mode": cfg.mode, "model_type": cfg.model.model_type}
 
@@ -34,17 +45,14 @@ def main(cfg: DictConfig) -> None:
             )
         ]
 
-    if cfg.model.model_type == "v1":
-        modules = [full_dag, training__v1]
-    else:
-        modules = [full_dag, training__v2]
-
     dr = (
         Builder()
         .with_modules(*modules)
         .with_config(cfg_dct)
         .with_materializers(*mats)
     ).build()
+
+    dr.display_all_functions("dag.png")
 
     data_path = "data/01_raw/dataset.parquet"
 
@@ -63,9 +71,6 @@ def main(cfg: DictConfig) -> None:
     results = dr.execute(final_vars, inputs=inputs)
     logger.info(f"Results: {results}")
     logger.info("Dataflow execution completed.")
-
-    dr.display_all_functions("dag.png")
-
 
 if __name__ == "__main__":
     main()
